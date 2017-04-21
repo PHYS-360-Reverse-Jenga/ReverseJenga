@@ -2,8 +2,19 @@
 """
 Created on Fri Apr 21 15:52:16 2017
 
-@author: Student
+@author: Leslie Murphy, Patrick Marquard, Ian Gorman
 """
-something
+import pygame
+from vec2d import Vec2d
+import random
+import math
 
-#im cool
+RED = (255,0,0)
+GREEN = (0,255,0)
+BLUE = (0,0,255)
+CYAN = (0,255,255)
+MAGENTA = (255,0,255)
+YELLOW = (255,255,0)
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+
