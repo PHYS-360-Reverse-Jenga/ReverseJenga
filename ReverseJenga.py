@@ -8,6 +8,9 @@ import pygame
 from vec2d import Vec2d
 import random
 import math
+from WorldClass import *
+from ShapeClass import *
+from ParticleClass import *
 
 RED = (255,0,0)
 GREEN = (0,255,0)
@@ -17,54 +20,6 @@ MAGENTA = (255,0,255)
 YELLOW = (255,255,0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-
-class Particle:
-    def __init__(self, position, velocity, mass, image = None, offset = None):
-        self.pos = Vec2d(position)
-        self.vel = Vec2d(velocity)
-        self.acc = Vec2d(0,0)
-        self.image = image
-        self.mass = mass
-        self.massinv = 1.0/mass
-        self.offset = offset
-        self.visible = True
-        if image != None:
-            self.set_image(image, offset)
-        
-    def set_image(self, image, offset=None):
-        self.offset = offset
-        if offset == None:
-            self.offset = Vec2d(image.get_width()/2, image.get_height()/2)
-        self.image = image
-        
-class World:
-    def __init__(self, width_pixels, height_pixels, bg_color = (255,255,255)):
-        pygame.init()
-        self.width = width_pixels
-        self.height = height_pixels
-        self.screen = pygame.display.set_mode((self.width, self.height))
-        self.bg_screen = pygame.Surface((self.width, self.height))
-        self.bg_screen.fill(bg_color)
-        self.particles = []
-
-    def add(self, particle):
-        self.particles.append(particle)
-        
-    def append(self, particle):
-        self.particles.append(particle)
-        
-    def prepend(self, particle):
-        self.particles.insert(0, particle)
-        
-    def remove(self, particle):
-        self.particles.remove(particle)
-        
-    def display(self):
-        self.screen.blit(self.bg_screen, (0,0))
-        for p in self.particles:
-            if p.visible:
-                self.screen.blit(p.image, p.pos - p.offset)
-        pygame.display.flip()
 
 def update_pos(particles, dt):
     for p in particles:
@@ -180,6 +135,7 @@ def rect_surface(width, height, color = (0,0,0)):
     image = pygame.Surface((width, height))
     image.fill(color)
     return image
+
     
 def main():
     pygame.init()
@@ -266,14 +222,6 @@ def main():
                 break
             if event.type == pygame.KEYDOWN:
                 timing = True
-            # Particle starts where mouse is pressed; drag for velocity
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1: # left mouse button
-                    particle.pos = Vec2d(event.pos)
-                    particle.radius = 0.5*diameter
-                    particle.image.set_alpha(127)
-                    world.add(particle)
-                    launching = True
             # Release particle with initial velocity
             if event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1: # left mouse button
