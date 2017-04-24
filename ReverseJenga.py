@@ -167,18 +167,32 @@ def main():
     grow_time = old_time
     diameter = 40
     area = math.pi*(diameter/2)**2
+    width = 80
+    height = 20
+    #default shape
+    shape = ellipse_surface(diameter,diameter, BLACK)
 
     while not done:
         time = pygame.time.get_ticks()
         if timing: timesteps += 1
         if timing: wait_time += time - old_time
         old_time = time
+        
+        # Checking for keys for grow/shrink
+        key = pygame.key.get_pressed()
+        
+        #change shape spawned
+        if key[pygame.K_c]:
+            shape = ellipse_surface(diameter,diameter, color)
+        if key[pygame.K_r]:
+            shape = rect_surface(width,height, color)
 
         # Create a new particle to replace one that was launched
         if new_particle_needed:
             new_particle_needed = False
             color = (random.randint(0,191), random.randint(0,191), random.randint(0,191))
-            particle = Particle(Vec2d(pygame.mouse.get_pos()), (0,0), 1, ellipse_surface(diameter, diameter, color))
+            #clikc adds circle
+            particle = Particle(Vec2d(pygame.mouse.get_pos()), (0,0), 1, shape)# ellipse_surface(diameter, diameter, color))
             radius = math.sqrt(area)*invsqrtpi
             diameter = 2*int(radius)
             particle.radius = radius
@@ -187,8 +201,6 @@ def main():
             world.add(particle)
             launching = False
 
-        # Checking for keys for grow/shrink
-        key = pygame.key.get_pressed()
         
         # Grow particle
         old_grow_time = grow_time
