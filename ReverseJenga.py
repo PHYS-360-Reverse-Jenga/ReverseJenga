@@ -178,7 +178,6 @@ def main():
         if timing: wait_time += time - old_time
         old_time = time
         
-        # Checking for keys for grow/shrink
         key = pygame.key.get_pressed()
         
         #change shape spawned
@@ -200,32 +199,6 @@ def main():
             particle.massinv = 1.0/particle.mass
             world.add(particle)
             launching = False
-
-        
-        # Grow particle
-        old_grow_time = grow_time
-        grow_time = time
-        if key[pygame.K_EQUALS]: # growing
-            area += growth_rate * (grow_time - old_grow_time)
-            radius = math.sqrt(area)*invsqrtpi
-            diameter = 2*int(radius)
-            particle.set_image(ellipse_surface(diameter, diameter, color))
-            particle.radius = radius
-            particle.mass = density*area
-            particle.massinv = 1.0/particle.mass
-            
-        # Shrink particle
-        if key[pygame.K_MINUS]: # shrinking
-            area -= growth_rate * (grow_time - old_grow_time)
-            min_area = 16*math.pi # diameter = 2
-            if area < min_area:
-                area = min_area 
-            radius = math.sqrt(area)*invsqrtpi
-            diameter = 2*int(radius+0.5)
-            particle.set_image(ellipse_surface(diameter, diameter, color))
-            particle.radius = radius
-            particle.mass = density*area
-            particle.massinv = 1.0/particle.mass
             
         # Check for events
         for event in pygame.event.get():
