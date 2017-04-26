@@ -296,21 +296,24 @@ def main():
     density = 1 # mass / area
     timesteps = 0
 
+
     shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
     shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
     shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50)
     
-    world.add(shape)
+    clickShapes.append(shape)
+    clickShapes.append(shape2)
+    clickShapes.append(shape3)
+
+
+    
+    """world.add(shape)
     world.add(shape2)
     world.add(shape3)
     
-    #shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
-    #shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
-    #shape3.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
-    
     moving.append(shape)
     moving.append(shape2)
-    moving.append(shape3)
+    moving.append(shape3)"""
     
     while not done:
         #print(shape.pos, shape.vel, shape.angle, shape.angvel)
@@ -319,6 +322,10 @@ def main():
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
                 break
+        if event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1: # left mouse button
+                world.add(clickShapes[0])
+                moving.append(clickShapes[0])
             
         # Velocity Verlet method
         n = 1
