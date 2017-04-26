@@ -45,15 +45,12 @@ class Shape:
     def create_origaxes(self):
         self.origaxes = []
         self.axes = []
-        """ (5) Create origaxes from origpoints to use for collisions """
         for i in range(len(self.origpoints)):
             a = (self.origpoints[i]-self.origpoints[i-1]).perpendicular_normal()
             self.origaxes.append(a)
             self.axes.append(a)
       
     def update_points(self):
-        """ (4) Replace self.origpoints[i] with a calculation of the current 
-                location of the point based on pos and angle. """
         for i in range(len(self.origpoints)):
             newX = self.origpoints[i].x*math.cos(self.angle) + self.origpoints[i].y*-math.sin(self.angle)
             newY = self.origpoints[i].x*math.sin(self.angle) + self.origpoints[i].y*math.cos(self.angle)
@@ -62,8 +59,6 @@ class Shape:
             self.points[i] = newPoint + self.pos
                 
     def update_axes(self):
-        """ (6) Replace self.origaxes[i] with a calculation of the current 
-                axis direction based on the current angle. """
         for i in range(len(self.origaxes)):
             #update axes
             newX = self.origaxes[i].x*math.cos(self.angle) + self.origaxes[i].y*-math.sin(self.angle)
@@ -73,7 +68,6 @@ class Shape:
             self.axes[i] = newAxes
                     
     def add_impulse(self, imp, pos):
-        """ (3) change vel and angvel based on added impulse """
         self.vel += imp/self.mass
         vec = Vec2d(pos - self.pos)
         self.angvel += (vec.cross(imp))/self.moment
@@ -121,13 +115,11 @@ class World:
             p.draw(self.screen)
 
 def update_pos(shapes, dt):
-    """ (1) add angle update """
     for p in shapes:
         p.pos   += p.vel*dt
         p.angle += p.angvel*dt
 
 def update_vel(shapes, dt):
-    """ (2) add angvel update """
     for p in shapes:
         p.vel    += p.force*p.massinv*dt
         p.angvel += (p.torque/p.moment)*dt
@@ -208,11 +200,7 @@ def collide(shape1, shape2):
     return (True, disp, point)    
        
 def handle_collisions(shapes, world):
-    """ (8) Collision detection """
     e = 0.8
-    #walls = [Wall(Vec2d(0,-1), Vec2d(0,world.height), 0.5)]
-
-    #Attempt to add more walls
     walls = [Wall(Vec2d(0, -1), Vec2d(0,world.height), 0.5), Wall(Vec2d(0, 1), Vec2d(0, 0), 0.5),
              Wall(Vec2d(-1, 0), Vec2d(world.width, 0), 0.5), Wall(Vec2d(1, 0), Vec2d(0, 0), 0.5)]
     for m in range(len(shapes)):       
@@ -293,6 +281,7 @@ def random_color(minimum, maximum):
         if value > minimum and value < maximum:
             break
     return color
+ 
     
 def main():
     pygame.init()
@@ -300,6 +289,7 @@ def main():
     world.display()
     
     moving = []
+    clickShapes = []
 
     clock = pygame.time.Clock()
     done = False
@@ -314,9 +304,9 @@ def main():
     world.add(shape2)
     world.add(shape3)
     
-    shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
-    shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
-    shape3.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
+    #shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
+    #shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
+    #shape3.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
     
     moving.append(shape)
     moving.append(shape2)
@@ -329,7 +319,7 @@ def main():
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
                 break
-
+            
         # Velocity Verlet method
         n = 1
         dt = 1 / n
