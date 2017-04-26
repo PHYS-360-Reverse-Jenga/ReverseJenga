@@ -290,6 +290,7 @@ def main():
     
     moving = []
     clickShapes = []
+    totalShapes = []
 
     clock = pygame.time.Clock()
     done = False
@@ -324,8 +325,10 @@ def main():
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: # left mouse button
                 world.add(clickShapes[0])
-                moving.append(clickShapes[0])
-            
+                totalShapes.append(clickShapes[0])
+                
+        for i in range(len(totalShapes)):
+            moving.append(totalShapes[i])    
         # Velocity Verlet method
         n = 1
         dt = 1 / n
