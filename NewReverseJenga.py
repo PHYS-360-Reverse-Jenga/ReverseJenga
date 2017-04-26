@@ -305,7 +305,6 @@ def main():
     clickShapes.append(shape2)
     clickShapes.append(shape3)
 
-
     
     """world.add(shape)
     world.add(shape2)
@@ -322,7 +321,7 @@ def main():
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
                 break
-        if event.type == pygame.MOUSEBUTTONUP:
+        if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1: # left mouse button
                 world.add(clickShapes[0])
                 moving.append(clickShapes[0])
