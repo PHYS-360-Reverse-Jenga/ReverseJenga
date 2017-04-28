@@ -319,13 +319,14 @@ def main():
     shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
     shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
     shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50) 
-    
+    #shape4 = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, 200, 50)
     
     world.add(shape)
     world.add(shape2)
     world.add(shape3)
     
-    
+    maxWidth = 300
+    maxHeight = 100
         
     
     #shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
@@ -335,6 +336,7 @@ def main():
     moving.append(shape)
     moving.append(shape2)
     moving.append(shape3)
+    #moving.append(shape4)
     
     while not done:
         
@@ -345,9 +347,15 @@ def main():
                 X,Y = 0,1
                 p = pygame.mouse.get_pos()
                 mouse_pos = Vec2d(p[X],p[Y])
-                shape4 = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, 200, 50)
-                world.add(shape4)
-                moving.append(shape4)
+                
+                #randShape = moving[random.randrange(len(moving))]
+                randShape = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, random.randrange(maxWidth), random.randrange(maxHeight))
+                #newShape = random.choice(moving)
+                #randShape.pos(mouse_pos)
+                world.add(randShape)
+                moving.append(randShape)
+                #world.add(shape4)
+                #moving.append(shape4)
                 
                 
                 
