@@ -310,7 +310,11 @@ def main():
     MIN_RECT_LEN = 50
     MIN_RECT_HEIGHT = 25
     
-    MAX_TRI_LEN = 200
+    MAX_TRI_LEN = 300
+    MIN_TRI_LEN = 100
+    
+    maxWidth = 300
+    maxHeight = 100
     
     
     moving = []
