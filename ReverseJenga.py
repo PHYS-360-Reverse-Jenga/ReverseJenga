@@ -42,14 +42,6 @@ def update_acc(particles, world):
     # [(0=x; 1=y), (location), (1=repel too large; -1=repel too small; 0=inactive)]
     for p in particles:
         force = Vec2d(0, 0)
-        """ (1) Comment out wall force and implement this in handle_collisions() """
-        """"for w in wall_data:
-            if w[2] != 0:
-                d = (p.pos[w[0]] - w[1])*w[2] + p.radius
-                if d > 0:
-                    rdir = Vec2d(0,0)
-                    rdir[w[0]] = -w[2] # unit vector from wall toward particle
-                    force += rdir*(kw*d - bw*p.vel.dot(rdir)) # Wall normal force"""
         for q in particles:
             if p != q:
                 rvec = p.pos - q.pos
@@ -60,12 +52,6 @@ def update_acc(particles, world):
                 Rsqrd = R*R
                 if rsqrd > Rsqrd:
                     force += gforce
-                """ (2) Comment out repulsive force and implement this in handle_collisions() """
-                """R = p.radius + q.radius
-                Rsqrd = R*R
-                if rsqrd < Rsqrd:
-                    d = R - math.sqrt(rsqrd)
-                    force += k*d*rdir # Repulsive force"""
         p.acc += p.massinv*force
 
 def handle_collisions(particles, world):
@@ -143,10 +129,6 @@ def main():
     world.display()
     
     moving = []
-    """ The list 'moving' holds all particles which are moving according to physics.
-        Whereas world.particles holds all particles being displayed.
-        The other particles are displayed but not moving, such as the target.  
-        The projectile also starts out as one of these particles. """
 
     clock = pygame.time.Clock()
     done = False

@@ -19,6 +19,25 @@ YELLOW = (255,255,0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 
+class Particle:
+    def __init__(self, position, velocity, mass, image = None, offset = None):
+        self.pos = Vec2d(position)
+        self.vel = Vec2d(velocity)
+        self.acc = Vec2d(0,0)
+        self.image = image
+        self.mass = mass
+        self.massinv = 1.0/mass
+        self.offset = offset
+        self.visible = True
+        if image != None:
+            self.set_image(image, offset)
+        
+    def set_image(self, image, offset=None):
+        self.offset = offset
+        if offset == None:
+            self.offset = Vec2d(image.get_width()/2, image.get_height()/2)
+        self.image = image
+        
 class Shape:
     def __init__(self, pos, vel, angle, angvel, color, mass, moment, points):
         self.pos = Vec2d(pos)
@@ -289,6 +308,7 @@ def main():
     
     moving = []
     clickShapes = []
+    totalShapes = []
 
     
 
@@ -296,13 +316,20 @@ def main():
     done = False
     density = 1 # mass / area
     timesteps = 0
+    particle = None
+    new_particle_needed = True
+
 
     shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
     shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
     shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50) 
     
     
-    world.add(shape)
+    clickShapes.append(shape)
+    clickShapes.append(shape2)
+    clickShapes.append(shape3)
+    
+    """world.add(shape)
     world.add(shape2)
     world.add(shape3)
     
@@ -315,11 +342,18 @@ def main():
     
     moving.append(shape)
     moving.append(shape2)
-    moving.append(shape3)
+    moving.append(shape3)"""
     
     while not done:
-        
+
         #print(shape.pos, shape.vel, shape.angle, shape.angvel)
+
+        # Create a new particle to replace one that was launched
+        if new_particle_needed:
+            particle = Particle(Vec2d(pygame.mouse.get_pos()), (0,0), 1, ellipse_surface(diameter, diameter, color))
+            world.add(particle)
+            launching = False
+            
         # Check for events
         for event in pygame.event.get():    
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -335,8 +369,22 @@ def main():
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
                 break
-            
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1: # left mouse button
+                world.add(clickShapes[0])
+                totalShapes.append(clickShapes[0])              
+        for i in range(len(totalShapes)):
+            moving.append(totalShapes[i])    
         # Velocity Verlet method
+        
+        # New particle follows pointer until mouse is pressed
+        launching = False
+        if not launching:
+            pos = Vec2d(pygame.mouse.get_pos())
+            particle.visible = (pygame.mouse.get_focused() and pos.x > 0 and pos.y > 0
+                                and pos.x < world.width-1 and pos.y < world.height-1)
+            particle.pos = pos 
+        
         n = 1
         dt = 1 / n
         collide_max = 1
