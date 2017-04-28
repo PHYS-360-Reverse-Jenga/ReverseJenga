@@ -123,10 +123,10 @@ class World:
         self.shapes.remove(shape)
         
     def display(self):
-        shapesPlaced = 0
-        font = pygame.font.SysFont('Calibri',25,True,False)
-        text = font.render("Shapes placed: " + shapesPlaced,True,BLACK)
-        self.screen.blit(text,[10,10])
+        #shapesPlaced = 0
+        #font = pygame.font.SysFont('Calibri',25,True,False)
+        #text = font.render("Shapes placed: " + shapesPlaced,True,BLACK)
+        #self.screen.blit(text,[10,10])
         self.screen.blit(self.bg_screen, (0,0))
         for p in self.shapes:
             p.draw(self.screen)
@@ -355,7 +355,7 @@ def main():
         for event in pygame.event.get():    
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                shapesPlaced = shapesPlaced+1
+                #shapesPlaced = shapesPlaced+1
                 X,Y = 0,1
                 p = pygame.mouse.get_pos()
                 mouse_pos = Vec2d(p[X],p[Y])
