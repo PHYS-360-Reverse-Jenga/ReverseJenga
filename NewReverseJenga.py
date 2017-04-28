@@ -123,6 +123,10 @@ class World:
         self.shapes.remove(shape)
         
     def display(self):
+        shapesPlaced = 0
+        font = pygame.font.SysFont('Calibri',25,True,False)
+        text = font.render("Shapes placed: " + shapesPlaced,True,BLACK)
+        self.screen.blit(text,[10,10])
         self.screen.blit(self.bg_screen, (0,0))
         for p in self.shapes:
             p.draw(self.screen)
@@ -333,6 +337,11 @@ def main():
     world.add(shape2)
     world.add(shape3)
     
+    #shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
+    #shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
+    #shape3.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
+    
+
     moving.append(shape)
     moving.append(shape2)
     moving.append(shape3)
@@ -342,10 +351,11 @@ def main():
     
     while not done:
         # Check for events
+        
         for event in pygame.event.get():    
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-
+                shapesPlaced = shapesPlaced+1
                 X,Y = 0,1
                 p = pygame.mouse.get_pos()
                 mouse_pos = Vec2d(p[X],p[Y])
