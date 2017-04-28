@@ -305,6 +305,14 @@ def main():
     world = World(800, 600, WHITE)
     world.display()
     
+    MAX_RECT_LEN = 400
+    MAX_RECT_HEIGHT = 75
+    MIN_RECT_LEN = 50
+    MIN_RECT_HEIGHT = 25
+    
+    MAX_TRI_LEN = 200
+    
+    
     moving = []
     clickShapes = []
 
