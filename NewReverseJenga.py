@@ -203,37 +203,36 @@ def handle_collisions(shapes, world):
     e = 0.8
     walls = [Wall(Vec2d(0, -1), Vec2d(0,world.height), 0.5), Wall(Vec2d(0, 1), Vec2d(0, 0), 0.5),
              Wall(Vec2d(-1, 0), Vec2d(world.width, 0), 0.5), Wall(Vec2d(1, 0), Vec2d(0, 0), 0.5)]
-    for m in range(len(shapes)):       
-        for i in range(len(shapes)):
-            #####
-            if (m == i):
-                pass            
-            p = shapes[i]
-            q = shapes[m]
-            p.update_points()
-            q.update_points()
-            p.update_axes()
-            q.update_axes()
-            
-            #Collision with walls
-            for wall in walls:
-                max_d = -1e15
-                wall_point = Vec2d(0,0)
-                for t in p.points:
-                    d = wall.pos.dot(wall.normal) - t.dot(wall.normal)
-                    if(d>max_d):
-                        max_d = d
-                        wall_point = t
-                if(max_d > 0):
-                    r = wall_point - p.pos 
-                    num = (-(1+wall.e)*(p.vel.dot(wall.normal)+p.angvel*(r.cross(wall.normal)))*wall.normal)
-                    denom = 1/p.mass + (r.cross(wall.normal))**2/(p.moment)       
-                    j = num/denom                
-                    p.add_impulse(j, wall_point)
-                    p.pos += max_d*wall.normal 
-                    p.update_points()
+    for s in shapes:
+        s.update_points()
+        s.update_axes()
+    for i in range(len(shapes)):
+        #####
+        p = shapes[i]
+
+        #Collision with walls
+        for wall in walls:
+            max_d = -1e15
+            wall_point = Vec2d(0,0)
+            for t in p.points:
+                d = wall.pos.dot(wall.normal) - t.dot(wall.normal)
+                if(d>max_d):
+                    max_d = d
+                    wall_point = t
+            if(max_d > 0):
+                r = wall_point - p.pos 
+                num = (-(1+wall.e)*(p.vel.dot(wall.normal)+p.angvel*(r.cross(wall.normal)))*wall.normal)
+                denom = 1/p.mass + (r.cross(wall.normal))**2/(p.moment)       
+                j = num/denom                
+                p.add_impulse(j, wall_point)
+                p.pos += max_d*wall.normal 
+                p.update_points()
            
             #start Rectangle collision
+        for m in range(len(shapes)):       
+            if (m == i):
+                continue          
+            q = shapes[m]
             displacement = Vec2d(0, 0)
             (collision, displacement, coll_point) = collide(shapes[i], shapes[m])  
             
@@ -261,7 +260,7 @@ def handle_collisions(shapes, world):
                 p.update_points()
                 q.update_points()
 
-        return False
+    return False
 
 class Rectangle(Shape):
     def __init__(self, pos, vel, angle, angvel, color, density, length, height):
@@ -291,6 +290,8 @@ def main():
     moving = []
     clickShapes = []
 
+    
+
     clock = pygame.time.Clock()
     done = False
     density = 1 # mass / area
@@ -298,11 +299,15 @@ def main():
 
     shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
     shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
-    shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50)
+    shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50) 
+    
     
     world.add(shape)
     world.add(shape2)
     world.add(shape3)
+    
+    
+        
     
     #shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
     #shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
@@ -313,9 +318,20 @@ def main():
     moving.append(shape3)
     
     while not done:
+        
         #print(shape.pos, shape.vel, shape.angle, shape.angvel)
         # Check for events
-        for event in pygame.event.get():
+        for event in pygame.event.get():    
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                X,Y = 0,1
+                p = pygame.mouse.get_pos()
+                mouse_pos = Vec2d(p[X],p[Y])
+                shape4 = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, 200, 50)
+                world.add(shape4)
+                moving.append(shape4)
+                
+                
+                
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
                 break
