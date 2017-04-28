@@ -312,6 +312,9 @@ def main():
     
     MAX_TRI_LEN = 200
     
+    maxWidth = 300
+    maxHeight = 100
+    
     
     moving = []
     clickShapes = []
@@ -340,12 +343,15 @@ def main():
                 X,Y = 0,1
                 p = pygame.mouse.get_pos()
                 mouse_pos = Vec2d(p[X],p[Y])
-                shape4 = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0, 3*256), 1, 200, 50)
-                world.add(shape4)
-                moving.append(shape4)
-            if event.type == pygame.QUIT: # Close window clicked
-                done = True
-                break
+                
+                #randShape = moving[random.randrange(len(moving))]
+                randShape = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, random.randrange(maxWidth), random.randrange(maxHeight))
+                #newShape = random.choice(moving)
+                #randShape.pos(mouse_pos)
+                world.add(randShape)
+                moving.append(randShape)
+                #world.add(shape4)
+                #moving.append(shape4)
             
         # Velocity Verlet method
         n = 1
