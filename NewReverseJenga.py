@@ -2,7 +2,7 @@
 """
 Created on Fri Feb 10 15:10:53 2017
 
-@author: sinkovitsd
+@author: Patrick Marquardt, Ian Gorman, Leslie Murphy
 """
 
 import pygame
@@ -230,7 +230,6 @@ def handle_collisions(shapes, world):
         s.update_points()
         s.update_axes()
     for i in range(len(shapes)):
-        #####
         p = shapes[i]
 
         #Collision with walls
@@ -251,7 +250,7 @@ def handle_collisions(shapes, world):
                 p.pos += max_d*wall.normal 
                 p.update_points()
            
-            #start Rectangle collision
+        #start Rectangle collision
         for m in range(len(shapes)):       
             if (m == i):
                 continue          
@@ -260,7 +259,7 @@ def handle_collisions(shapes, world):
             (collision, displacement, coll_point) = collide(shapes[i], shapes[m])  
             
             if collision:
-                print(m,i, displacement)
+                #print(m,i, displacement)
                 normal = displacement.normalized()              
                 #p
                 p_r = coll_point - p.pos
@@ -310,10 +309,20 @@ def main():
     world = World(800, 600, WHITE)
     world.display()
     
+    MAX_RECT_LEN = 400
+    MAX_RECT_HEIGHT = 75
+    MIN_RECT_LEN = 50
+    MIN_RECT_HEIGHT = 25
+    
+    MAX_TRI_LEN = 300
+    MIN_TRI_LEN = 100
+    
+    maxWidth = 300
+    maxHeight = 100
+    
+    
     moving = []
     clickShapes = []
-
-    
 
     clock = pygame.time.Clock()
     done = False
@@ -323,8 +332,7 @@ def main():
     shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
     shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
     shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50) 
-    
-    
+      
     world.add(shape)
     world.add(shape2)
     world.add(shape3)
@@ -333,13 +341,12 @@ def main():
     #shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
     #shape3.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
     
+
     moving.append(shape)
     moving.append(shape2)
     moving.append(shape3)
     
     while not done:
-        
-        #print(shape.pos, shape.vel, shape.angle, shape.angvel)
         # Check for events
         
         for event in pygame.event.get():    
@@ -348,15 +355,15 @@ def main():
                 X,Y = 0,1
                 p = pygame.mouse.get_pos()
                 mouse_pos = Vec2d(p[X],p[Y])
-                shape4 = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, 200, 50)
-                world.add(shape4)
-                moving.append(shape4)
                 
-                
-                
-            if event.type == pygame.QUIT: # Close window clicked
-                done = True
-                break
+                #randShape = moving[random.randrange(len(moving))]
+                randShape = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, random.randrange(maxWidth), random.randrange(maxHeight))
+                #newShape = random.choice(moving)
+                #randShape.pos(mouse_pos)
+                world.add(randShape)
+                moving.append(randShape)
+                #world.add(shape4)
+                #moving.append(shape4)
             
         # Velocity Verlet method
         n = 1
@@ -371,8 +378,7 @@ def main():
             update_vel(moving, 0.5*dt)
             while collide_count < collide_max and handle_collisions(moving, world):
                 collide_count += 1
-        world.display()
-        
+        world.display()     
         clock.tick(30) # wait so that this only updates 60 fps maximum
         
     pygame.quit() # quit nicely, so the program window doesn't hang
