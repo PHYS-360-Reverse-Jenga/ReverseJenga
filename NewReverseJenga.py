@@ -2,7 +2,7 @@
 """
 Created on Fri Feb 10 15:10:53 2017
 
-@author: sinkovitsd
+@author: Patrick Marquardt, Ian Gorman, Leslie Murphy
 """
 
 import pygame
@@ -226,7 +226,6 @@ def handle_collisions(shapes, world):
         s.update_points()
         s.update_axes()
     for i in range(len(shapes)):
-        #####
         p = shapes[i]
 
         #Collision with walls
@@ -247,7 +246,7 @@ def handle_collisions(shapes, world):
                 p.pos += max_d*wall.normal 
                 p.update_points()
            
-            #start Rectangle collision
+        #start Rectangle collision
         for m in range(len(shapes)):       
             if (m == i):
                 continue          
@@ -256,7 +255,7 @@ def handle_collisions(shapes, world):
             (collision, displacement, coll_point) = collide(shapes[i], shapes[m])  
             
             if collision:
-                print(m,i, displacement)
+                #print(m,i, displacement)
                 normal = displacement.normalized()              
                 #p
                 p_r = coll_point - p.pos
@@ -309,36 +308,24 @@ def main():
     moving = []
     clickShapes = []
 
-    
-
     clock = pygame.time.Clock()
     done = False
     density = 1 # mass / area
     timesteps = 0
 
-    shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
+    """shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
     shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
     shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50) 
-    
-    
+      
     world.add(shape)
     world.add(shape2)
     world.add(shape3)
     
-    
-        
-    
-    #shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
-    #shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
-    #shape3.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
-    
     moving.append(shape)
     moving.append(shape2)
-    moving.append(shape3)
+    moving.append(shape3)"""
     
     while not done:
-        
-        #print(shape.pos, shape.vel, shape.angle, shape.angvel)
         # Check for events
         for event in pygame.event.get():    
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -348,9 +335,6 @@ def main():
                 shape4 = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, 200, 50)
                 world.add(shape4)
                 moving.append(shape4)
-                
-                
-                
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
                 break
