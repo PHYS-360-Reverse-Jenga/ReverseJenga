@@ -313,7 +313,7 @@ def main():
     density = 1 # mass / area
     timesteps = 0
 
-    """shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
+    shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
     shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
     shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50) 
       
@@ -323,7 +323,7 @@ def main():
     
     moving.append(shape)
     moving.append(shape2)
-    moving.append(shape3)"""
+    moving.append(shape3)
     
     while not done:
         # Check for events
@@ -332,7 +332,7 @@ def main():
                 X,Y = 0,1
                 p = pygame.mouse.get_pos()
                 mouse_pos = Vec2d(p[X],p[Y])
-                shape4 = Rectangle((mouse_pos), (0,0), 0, 0, YELLOW, 1, 200, 50)
+                shape4 = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0, 3*256), 1, 200, 50)
                 world.add(shape4)
                 moving.append(shape4)
             if event.type == pygame.QUIT: # Close window clicked
@@ -352,8 +352,7 @@ def main():
             update_vel(moving, 0.5*dt)
             while collide_count < collide_max and handle_collisions(moving, world):
                 collide_count += 1
-        world.display()
-        
+        world.display()     
         clock.tick(30) # wait so that this only updates 60 fps maximum
         
     pygame.quit() # quit nicely, so the program window doesn't hang
