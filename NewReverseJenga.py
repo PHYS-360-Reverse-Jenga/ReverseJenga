@@ -353,6 +353,9 @@ def main():
         # Check for events
         
         for event in pygame.event.get():    
+            if event.type == pygame.QUIT: # Close window clicked
+                done = True
+                break
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 #shapesPlaced = shapesPlaced+1
