@@ -306,7 +306,7 @@ def random_color(minimum, maximum):
     
 def main():
     pygame.init()
-    world = World(800, 600, WHITE)
+    world = World(1200, 800, WHITE)
     world.display()
     
     MAX_RECT_LEN = 400
@@ -317,55 +317,49 @@ def main():
     MAX_TRI_LEN = 300
     MIN_TRI_LEN = 100
     
-    maxWidth = 300
-    maxHeight = 100
-    
-    
     moving = []
     clickShapes = []
 
     clock = pygame.time.Clock()
     done = False
+    new_particle_needed = True
+    launching = False
+    
     density = 1 # mass / area
     timesteps = 0
 
-    shape = Rectangle((400,400), (0,0), 0, 0, BLUE, 1, 200, 50)
-    shape2 = Rectangle((300,300), (0,0), 0, 0, GREEN, 1, 200, 50)
-    shape3 = Rectangle((450,450), (0,0), 0, 0, RED, 1, 200, 50) 
-      
-    world.add(shape)
-    world.add(shape2)
-    world.add(shape3)  
+    while not done:       
+        # Create a new particle to replace one that was launched
+        if new_particle_needed:
+            new_particle_needed = False
+            X,Y = 0,1
+            p = pygame.mouse.get_pos()
+            mouse_pos = Vec2d(p[X],p[Y])
 
-    moving.append(shape)
-    moving.append(shape2)
-    moving.append(shape3)
+            #Make Random Rectangle
+            randWid = random.randrange(MIN_RECT_LEN, MAX_RECT_LEN)
+            randLen = random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT)
+            randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,768), 1, randWid, randLen )
+            world.add(randShape)
+            
+            
     
-    maxWidth = 300
-    maxHeight = 100
-    
-    while not done:
         for event in pygame.event.get():    
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
-                #shapesPlaced = shapesPlaced+1
-                X,Y = 0,1
-                p = pygame.mouse.get_pos()
-                mouse_pos = Vec2d(p[X],p[Y])
-
-                #Make Random Rectangle
-                randWid = random.randrange(MIN_RECT_LEN, MAX_RECT_LEN)
-                randLen = random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT)
-                randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,768), 1, randWid, randLen )
-                #newShape = random.choice(moving)
-                #randShape.pos(mouse_pos)
-
-                world.add(randShape)
+                #Add Random shape to world
                 moving.append(randShape)
-                #world.add(shape4)
-                #moving.append(shape4)
+                launching = False
+                new_particle_needed = True
+                # New particle follows pointer until mouse is pressed
+        if not launching:
+            pos = Vec2d(pygame.mouse.get_pos())
+            randShape.visible = (pygame.mouse.get_focused() and pos.x > 0 and pos.y > 0
+                                and pos.x < world.width-1 and pos.y < world.height-1)
+            randShape.pos = pos
+
             
         # Velocity Verlet method
         n = 1
