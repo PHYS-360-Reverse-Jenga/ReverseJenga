@@ -335,12 +335,7 @@ def main():
       
     world.add(shape)
     world.add(shape2)
-    world.add(shape3)
-    
-    #shape.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
-    #shape2.add_impulse(Vec2d(0,-5000), Vec2d(500,400))
-    #shape3.add_impulse(Vec2d(0,-50000), Vec2d(500,400))
-    
+    world.add(shape3)  
 
     moving.append(shape)
     moving.append(shape2)
@@ -350,10 +345,7 @@ def main():
     maxHeight = 100
     
     while not done:
-        # Check for events
-        
         for event in pygame.event.get():    
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 #shapesPlaced = shapesPlaced+1
                 X,Y = 0,1
@@ -361,7 +353,7 @@ def main():
                 mouse_pos = Vec2d(p[X],p[Y])
                 #randShape = moving[random.randrange(len(moving))]
 
-                randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,3*256), 1, random.randrange(maxWidth), random.randrange(maxHeight))
+                randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,3*256), 1, random.randrange(MIN_RECT_LEN, MAX_RECT_LEN), random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT))
                 #newShape = random.choice(moving)
                 #randShape.pos(mouse_pos)
 
