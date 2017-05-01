@@ -354,9 +354,11 @@ def main():
                 X,Y = 0,1
                 p = pygame.mouse.get_pos()
                 mouse_pos = Vec2d(p[X],p[Y])
-                #randShape = moving[random.randrange(len(moving))]
 
-                randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,3*256), 1, random.randrange(MIN_RECT_LEN, MAX_RECT_LEN), random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT))
+                #Make Random Rectangle
+                randWid = random.randrange(MIN_RECT_LEN, MAX_RECT_LEN)
+                randLen = random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT)
+                randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,768), 1, randWid, randLen )
                 #newShape = random.choice(moving)
                 #randShape.pos(mouse_pos)
 
