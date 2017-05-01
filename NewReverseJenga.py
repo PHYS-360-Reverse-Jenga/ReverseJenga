@@ -54,9 +54,9 @@ class Shape:
         self.angvel = float(angvel)
         self.torque = 0.0
         self.mass = mass
-        self.massinv = 1.0/mass
+        self.massinv = 1.0/(mass+.000001)
         self.moment = moment
-        self.momentinv = 1.0/moment
+        self.momentinv = 1.0/(moment+.000001)
         self.visible = True
         self.update_points()
         self.update_axes()    
@@ -145,7 +145,7 @@ def update_pos(shapes, dt):
 def update_vel(shapes, dt):
     for p in shapes:
         p.vel    += p.force*p.massinv*dt
-        p.angvel += (p.torque/p.moment)*dt
+        p.angvel += (p.torque/(p.moment+.000001))*dt
         
 def update_force(shapes, world):
     for p in shapes:
