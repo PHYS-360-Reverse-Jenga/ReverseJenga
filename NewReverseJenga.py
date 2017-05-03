@@ -323,7 +323,6 @@ def main():
     world = World(1200, 800, WHITE)
     world.display()
     
-    
     MAX_RECT_LEN = 400
     MAX_RECT_HEIGHT = 75
     MIN_RECT_LEN = 50
