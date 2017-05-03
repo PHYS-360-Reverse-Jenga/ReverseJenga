@@ -302,9 +302,16 @@ def random_color(minimum, maximum):
         if value > minimum and value < maximum:
             break
     return color
- 
 
-   
+
+class Triangle(Shape):
+    def __init__(self, pos, vel, angle, angvel, color, density, length, height):
+        points = []
+        pos = points/3
+        volume = (length * height)/2
+        mass = density * volume
+        moment = (mass/36)*(length*length + height*height)
+        super().__init__(pos, vel, angle, angvel, color, mass, moment, points)
     
 def main():
     pygame.init()
