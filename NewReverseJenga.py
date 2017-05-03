@@ -323,10 +323,6 @@ def main():
     world = World(1200, 800, WHITE)
     world.display()
     
-    # -- Font Stuff -- #
-    font = pygame.font.SysFont("Times New Roman", 50)
-    fuel_label = font.render("Shapes Placed: ", False, BLACK)
-    world.screen.blit(fuel_label, (50, 50))
     
     MAX_RECT_LEN = 400
     MAX_RECT_HEIGHT = 75
@@ -337,6 +333,14 @@ def main():
     MIN_TRI_LEN = 100
     
     moving = []
+    num_shapes = 0
+  
+    # -- Font Stuff -- #
+    font = pygame.font.SysFont("Times New Roman", 30)
+    shape_label = font.render("Shapes Placed: ", 1, BLACK)
+    shape_display = font.render(str(num_shapes), 1, BLACK)
+    world.screen.blit(shape_label, (50, 50))
+    world.screen.blit(shape_display, (240, 50))
 
     clock = pygame.time.Clock()
     done = False
@@ -368,6 +372,8 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 #Add Random shape to world
                 moving.append(randShape)
+                num_shapes = num_shapes + 1 
+                print(num_shapes)
                 launching = False
                 new_particle_needed = True
                 
@@ -391,8 +397,13 @@ def main():
             while collide_count < collide_max and handle_collisions(moving, world):
                 collide_count += 1
         world.display()  
-        world.screen.blit(fuel_label, (50, 50))
+        
+        shape_label = font.render("Shapes Placed: ", 1, BLACK)
+        shape_display = font.render(str(num_shapes), 1, BLACK)
+        world.screen.blit(shape_label, (50, 50))
+        world.screen.blit(shape_display, (240, 50))
         pygame.display.flip()
+        
         clock.tick(30) # wait so that this only updates 60 fps maximum
         
     pygame.quit() # quit nicely, so the program window doesn't hang
