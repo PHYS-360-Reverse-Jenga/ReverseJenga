@@ -5,7 +5,8 @@ Created on Fri Feb 10 15:10:53 2017
 @author: Patrick Marquardt, Ian Gorman, Leslie Murphy
 """
 
-import pygame
+import pygame, sys
+from pygame.locals import *
 from vec2d import Vec2d
 import random
 import math
@@ -18,6 +19,10 @@ MAGENTA = (255,0,255)
 YELLOW = (255,255,0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+
+
+
+
 
 class Particle:
     def __init__(self, position, velocity, mass, image = None, offset = None):
@@ -303,11 +308,18 @@ def random_color(minimum, maximum):
             break
     return color
  
+
+   
     
 def main():
     pygame.init()
     world = World(1200, 800, WHITE)
+    screen = pygame.display.set_mode((1200, 800))
     world.display()
+    
+    # -- Font Stuff -- #
+    font = pygame.font.SysFont("Times New Roman", 18)
+    fuel_label = font.render("Shapes Placed: ", 1, BLACK)
     
     MAX_RECT_LEN = 400
     MAX_RECT_HEIGHT = 75
@@ -328,7 +340,11 @@ def main():
     density = 1 # mass / area
     timesteps = 0
 
+
     while not done:       
+        fuel_label = font.render("Shapes Placed: ", 1, BLACK)
+        screen.blit(fuel_label, (50, 50))
+        
         # Create a new particle to replace one that was launched
         if new_particle_needed:
             new_particle_needed = False
@@ -341,9 +357,7 @@ def main():
             randLen = random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT)
             randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,768), 1, randWid, randLen )
             world.add(randShape)
-            
-            
-    
+        
         for event in pygame.event.get():    
             if event.type == pygame.QUIT: # Close window clicked
                 done = True
@@ -353,13 +367,12 @@ def main():
                 moving.append(randShape)
                 launching = False
                 new_particle_needed = True
-                # New particle follows pointer until mouse is pressed
+                
         if not launching:
             pos = Vec2d(pygame.mouse.get_pos())
             randShape.visible = (pygame.mouse.get_focused() and pos.x > 0 and pos.y > 0
                                 and pos.x < world.width-1 and pos.y < world.height-1)
             randShape.pos = pos
-
             
         # Velocity Verlet method
         n = 1
