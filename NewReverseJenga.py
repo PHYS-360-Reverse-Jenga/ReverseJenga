@@ -313,9 +313,9 @@ class Triangle(Shape):
         points[0] -= com
         points[1] -= com
         points[2] -= com
-        area = 0.5 * u.cross(v)
+        area = abs(0.5 * u.cross(v))
         mass = density * area
-        moment = (mass/6)*(u.length + v.length - u.dot(v))
+        moment = (mass/6)*(u.get_length_sqrd() + v.get_length_sqrd() - u.dot(v))
         super().__init__(pos, vel, angle, angvel, color, mass, moment, points)
     
 def main():
