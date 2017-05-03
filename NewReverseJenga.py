@@ -305,12 +305,17 @@ def random_color(minimum, maximum):
 
 
 class Triangle(Shape):
-    def __init__(self, pos, vel, angle, angvel, color, density, length, height):
-        points = []
-        pos = points/3
-        volume = (length * height)/2
-        mass = density * volume
-        moment = (mass/36)*(length*length + height*height)
+    def __init__(self, pos, vel, angle, angvel, color, density, length, height, shift):
+        points = [Vec2d(0,0), Vec2d(shift, height), Vec2d(length,0)]
+        com = (points[0]+points[1]+points[2])/3
+        u = points[1]-points[0]
+        v = points[2]-points[0]
+        points[0] -= com
+        points[1] -= com
+        points[2] -= com
+        area = 0.5 * u.cross(v)
+        mass = density * area
+        moment = (mass/6)*(u.length + v.length - u.dot(v))
         super().__init__(pos, vel, angle, angvel, color, mass, moment, points)
     
 def main():
