@@ -354,11 +354,20 @@ def main():
             X,Y = 0,1
             p = pygame.mouse.get_pos()
             mouse_pos = Vec2d(p[X],p[Y])
+                
 
             #Make Random Rectangle
             randWid = random.randrange(MIN_RECT_LEN, MAX_RECT_LEN)
             randLen = random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT)
-            randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,768), 1, randWid, randLen )
+            randShift = random.randrange(MIN_TRI_LEN, MAX_TRI_LEN)
+            
+            #shape chooser
+            if random.randrange(0,2) == 0:
+                #pick rect
+                randShape = Rectangle((mouse_pos), (0,0), 0, 0, random_color(0,768), 1, randWid, randLen )
+            else:
+                #pick Triangle
+                randShape = Triangle((mouse_pos), (0,0), 0, 0, random_color(0,768), 1, randWid, randLen, randShift )
             world.add(randShape)
         
         for event in pygame.event.get():    
