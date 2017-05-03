@@ -152,137 +152,198 @@ def update_force(shapes, world):
         p.force += p.mass * gravity
 
 class Wall:
-    def __init__(self, normal, position, e=1):
-        self.normal = normal
+    def __init__(self, normal, position, e=1, mu=0):
+        self.normal = normal.normalized()
         self.pos = position
         self.e = e
+        self.mu = mu
         
 def collide(shape1, shape2):
-    
+    dmin = 0
+    disp = Vec2d(0,0)
+    j = 0
     axes = shape1.axes + shape2.axes
-    distance = []
-    mind = 9999999999
-    
-    for j,a in enumerate(axes):
-        
-        s1Min = a.dot(shape1.points[0])
-        s1Max = s1Min      
-        s2Min = a.dot(shape2.points[0])
-        s2Max = s2Min
-        
-        i1_max = 0
-        i1_min = 0
-        i2_max = 0
-        i2_min = 0
-        
-        for i in range(len(shape1.points)):
-            p1 = (a.dot(shape1.points[i]))
-            if(p1< s1Min):
-                s1Min = p1
-                i1_min = i
-            if(p1>s1Max):
-                s1Max = p1
-                i1_max = i
-                
-        for i in range(len(shape2.points)):
-            p2 = (a.dot(shape2.points[i]))
-            if (p2 < s2Min):
-                s2Min = p2
-                i2_min = i          
-            if(p2 > s2Max):
-                s2Max = p2
-                i2_max = i
-        
-        distance = min(s1Max-s2Min,s2Max-s1Min)        
+    for j,axis in enumerate(axes):
+        p1min = axis.dot(shape1.points[0])
+        p1max = p1min
+        i1min = 0
+        i1max = 0
+        for i in range(1,len(shape1.points)):
+            p = axis.dot(shape1.points[i])
+            if p > p1max:
+                p1max = p
+                i1max = i
+            elif p < p1min:
+                p1min = p
+                i1min = i
 
-        if distance < mind:
-            mind = distance
-                        
-            if mind <= 1e-12:
-                return (False, None, None)
-                
-            if (s1Max - s2Min < s2Max - s1Min):
-                disp = -mind*a
-                
-                if(j < len(shape1.axes)):
-                    point = shape2.points[i2_min]
+        p2min = axis.dot(shape2.points[0])
+        p2max = p2min
+        i2min = 0
+        i2max = 0
+        for i in range(1, len(shape2.points)):
+            p = axis.dot(shape2.points[i])
+            if p > p2max:
+                p2max = p
+                i2max = i
+            elif p < p2min:
+                p2min = p
+                i2min = i
+
+        d1 = p1max - p2min
+        d2 = p2max - p1min
+        if d1 <= 0 or d2 <= 0:
+            return (False, None, None, None, None)
+        else:
+            if d1 < d2:
+                axis *= -1
+                d = d1
+                if j < len(shape1.axes): # axis belongs to shape1
+                    pt = shape2.points[i2min]
+                    vec1 = pt - d*axis - shape1.pos
+                    vec2 = pt - shape2.pos
                 else:
-                    point = shape1.points[i1_max]
+                    pt = shape1.points[i1max]
+                    vec1 = pt - shape1.pos
+                    vec2 = pt + d*axis - shape2.pos
             else:
-                disp = mind*a    
-                
-                if(j < len(shape1.axes)):
-                    point = shape2.points[i2_max]
+                d = d2
+                if j < len(shape1.axes):
+                    pt = shape2.points[i2max]
+                    vec1 = pt - d*axis - shape1.pos
+                    vec2 = pt - shape2.pos
                 else:
-                    point = shape1.points[i1_min]
-
-    return (True, disp, point)    
+                    pt = shape1.points[i1min]
+                    vec1 = pt - shape1.pos
+                    vec2 = pt + d*axis - shape2.pos
+            if dmin == 0 or d < dmin:
+                dmin = d
+                disp = d*axis
+                point = pt
+                vector1 = vec1
+                vector2 = vec2
+    return (True, disp, point, vector1, vector2)
        
-def handle_collisions(shapes, world):
-    e = 0.8
-    walls = [Wall(Vec2d(0, -1), Vec2d(0,world.height), 0.5), Wall(Vec2d(0, 1), Vec2d(0, 0), 0.5),
-             Wall(Vec2d(-1, 0), Vec2d(world.width, 0), 0.5), Wall(Vec2d(1, 0), Vec2d(0, 0), 0.5)]
-    for s in shapes:
-        s.update_points()
-        s.update_axes()
+def handle_collisions(shapes, world, dt):
+    DEG = math.pi/180
+    walls = [Wall(Vec2d(0,-1), Vec2d(0,world.height), 0.7, 0.3),
+             Wall(Vec2d(1,0), Vec2d(0,0), 0.7, 0.1),
+             Wall(Vec2d(-1,0), Vec2d(world.width, 0), 0.7, 0.1)]
+    e = 0.7
+    mu = 0.3
+    collided = False
+    sleep_vel = 0.005
+    sleep_angvel = 0.001
+    for p in shapes:
+        p.update_points()
+        p.update_axes()
     for i in range(len(shapes)):
         p = shapes[i]
-
-        #Collision with walls
         for wall in walls:
             max_d = -1e15
-            wall_point = Vec2d(0,0)
+            point = Vec2d(0,0)
             for t in p.points:
-                d = wall.pos.dot(wall.normal) - t.dot(wall.normal)
-                if(d>max_d):
+                d = wall.normal.dot(wall.pos - t)
+                if d > max_d:
                     max_d = d
-                    wall_point = t
-            if(max_d > 0):
-                r = wall_point - p.pos 
-                num = (-(1+wall.e)*(p.vel.dot(wall.normal)+p.angvel*(r.cross(wall.normal)))*wall.normal)
-                denom = 1/p.mass + (r.cross(wall.normal))**2/(p.moment)       
-                j = num/denom                
-                p.add_impulse(j, wall_point)
-                p.pos += max_d*wall.normal 
+                    point = t
+            if max_d > 0:
+                p.sleeping = False
+                r = point - p.pos
+                collided = True
+                vrel = p.vel + p.angvel*r.perpendicular()
+                vrel_normal = vrel.dot(wall.normal)
+                if vrel_normal < 0:
+                    v_target_normal = -(1 + wall.e)*vrel_normal
+                    parallel = wall.normal.perpendicular()
+                    v_target_parallel = -vrel.dot(parallel)
+                    r_normal = r.dot(wall.normal)
+                    r_parallel = r.dot(parallel)
+                    minv_parallel = p.massinv + r_parallel*r_parallel*p.momentinv
+                    minv_normal = p.massinv + r_normal*r_normal*p.momentinv
+                    minv_both = r_normal*r_parallel*p.momentinv
+                    m = 1.0/(minv_parallel*minv_normal - minv_both*minv_both)
+                    imp_normal = (minv_normal*v_target_normal 
+                                      + minv_both*v_target_parallel)*m
+                    imp_parallel = (minv_parallel*v_target_parallel
+                                        + minv_both*v_target_normal)*m
+                    if imp_parallel < 0:
+                        imp_parallel *= -1
+                        parallel *= -1
+                        minv_both *= -1
+                        v_target_parallel *= -1
+                    if imp_parallel > wall.mu*imp_normal:
+                        imp_normal = v_target_normal/(minv_parallel - wall.mu*minv_both)
+                        imp_parallel = wall.mu*imp_normal
+                    imp = imp_normal*wall.normal + imp_parallel*parallel
+                    p.add_impulse(imp, point)
+                rxn = r.cross(wall.normal)
+                mm = 1.0/(p.massinv + rxn*rxn*p.momentinv)
+                p.pos += wall.normal*max_d*p.massinv*mm
+                p.angle += max_d*rxn*p.momentinv*mm
                 p.update_points()
-                
-                p.vel = p.vel*.01
-           
-        #start Rectangle collision
-        for m in range(len(shapes)):       
-            if (m == i):
-                continue          
-            q = shapes[m]
-            displacement = Vec2d(0, 0)
-            (collision, displacement, coll_point) = collide(shapes[i], shapes[m])  
-            
+                p.update_axes()
+                if p.vel.length < sleep_vel and abs(p.angvel) < sleep_angvel:
+                    p.sleeping = True
+        for j in range(i):#range(len(shapes)):
+            if i==j: continue
+            q = shapes[j]
+            (collision, disp, point, pr, qr) = collide(p, q)
             if collision:
-                #print(m,i, displacement)
-                normal = displacement.normalized()              
-                #p
-                p_r = coll_point - p.pos
-                p_num = (-(1 + e)*(p.vel.dot(normal)+p.angvel*(p_r.cross(normal))))
-                p_denom = 1/p.mass + (p_r.cross(normal))**2/(p.moment)    
-                
-                #q
-                q_r = coll_point - q.pos
-                q_num = (-(1 + e)*(q.vel.dot(normal)+q.angvel*(q_r.cross(normal))))
-                q_denom = 1/q.mass + (q_r.cross(normal))**2/(q.moment)
-
-                imp = (p_num - q_num)/(p_denom + q_denom)
-                if imp > 0:                            
-                    p.add_impulse(imp*normal, coll_point)
-                    q.add_impulse(-(imp*normal), coll_point)
-                    
-                #Handle rectangle depenetration
-                p.pos +=  displacement * (p.massinv/(p.massinv + q.massinv))
-                q.pos -=  displacement * (q.massinv/(p.massinv + q.massinv))
+                collided = True
+                p.sleeping = False
+                q.sleeping = False
+                normal = disp.normalized()
+                vrel = (p.vel + p.angvel*pr.perpendicular()
+                        -(q.vel + q.angvel*qr.perpendicular()))
+                vrel_normal = vrel.dot(normal)
+                if vrel_normal < 0:
+                    v_target_normal = -(1 + e)*vrel_normal
+                    parallel = normal.perpendicular()
+                    v_target_parallel = -vrel.dot(parallel)
+                    pr_normal = pr.dot(normal)
+                    pr_parallel = pr.dot(parallel)
+                    qr_normal = qr.dot(normal)
+                    qr_parallel = qr.dot(parallel)
+                    minv_parallel = (p.massinv + pr_parallel*pr_parallel*p.momentinv
+                                     + q.massinv + qr_parallel*qr_parallel*q.momentinv)
+                    minv_normal = (p.massinv + pr_normal*pr_normal*p.momentinv
+                                   + q.massinv + qr_normal*qr_normal*q.momentinv)
+                    minv_both = (pr_normal*pr_parallel*p.momentinv 
+                                 + qr_normal*qr_parallel*q.momentinv)
+                    m = 1.0/(minv_parallel*minv_normal - minv_both*minv_both)
+                    imp_normal = (minv_normal*v_target_normal 
+                                      + minv_both*v_target_parallel)*m
+                    imp_parallel = (minv_parallel*v_target_parallel
+                                        + minv_both*v_target_normal)*m
+                    if imp_parallel < 0:
+                        imp_parallel *= -1
+                        parallel *= -1
+                        minv_both *= -1
+                    if imp_parallel > mu*imp_normal:
+                        imp_normal = v_target_normal/(minv_parallel - mu*minv_both)
+                        imp_parallel = mu*imp_normal
+                    imp = imp_normal*normal + imp_parallel*parallel
+                    p.add_impulse(imp, point)
+                    q.add_impulse(-imp, point)
+                prxn = pr.cross(normal)
+                qrxn = qr.cross(normal)
+                mm = 1.0/(p.massinv + q.massinv 
+                        + prxn*prxn*p.momentinv + qrxn*qrxn*q.momentinv)
+                p.pos += disp*p.massinv*mm
+                q.pos -= disp*q.massinv*mm
+                d = disp.length
+                p.angle += d*prxn*p.momentinv*mm
+                q.angle -= d*qrxn*q.momentinv*mm
                 p.update_points()
                 q.update_points()
-                
-                p.vel = p.vel*.01
-
-    return False
+                p.update_axes()
+                q.update_axes()
+                if p.vel.length < sleep_vel and abs(p.angvel) < sleep_angvel:
+                    p.sleeping = True
+                if q.vel.length < sleep_vel and abs(q.angvel) < sleep_angvel:
+                    q.sleeping = True
+    return collided
 
 class Rectangle(Shape):
     def __init__(self, pos, vel, angle, angvel, color, density, length, height):
@@ -394,16 +455,19 @@ def main():
         # Velocity Verlet method
         n = 1
         dt = 1 / n
-        collide_max = 1
+        collide_max = 10
         for i in range(n):        
             update_force(moving, world)
             update_vel(moving, 0.5*dt)
             update_pos(moving, dt)
-            collide_count = 0
             update_force(moving, world)
             update_vel(moving, 0.5*dt)
-            while collide_count < collide_max and handle_collisions(moving, world):
+            collide_count = 0
+            collide_dt = dt
+            while (collide_count < collide_max 
+                   and handle_collisions(moving, world, collide_dt)):
                 collide_count += 1
+                collide_dt = 0
         world.display()  
         
         shape_label = font.render("Shapes Placed: ", 1, BLACK)
