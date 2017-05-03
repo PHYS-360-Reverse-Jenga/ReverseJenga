@@ -385,7 +385,9 @@ def main():
             update_vel(moving, 0.5*dt)
             while collide_count < collide_max and handle_collisions(moving, world):
                 collide_count += 1
-        world.display()     
+        world.display()  
+        world.screen.blit(fuel_label, (50, 50))
+        pygame.display.flip()
         clock.tick(30) # wait so that this only updates 60 fps maximum
         
     pygame.quit() # quit nicely, so the program window doesn't hang
