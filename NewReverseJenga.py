@@ -5,11 +5,10 @@ Created on Fri Feb 10 15:10:53 2017
 @author: Patrick Marquardt, Ian Gorman, Leslie Murphy
 """
 
-import pygame, sys
-from pygame.locals import *
 from vec2d import Vec2d
 import random
 import math
+import pygame
 
 RED = (255,0,0)
 GREEN = (0,255,0)
@@ -19,10 +18,6 @@ MAGENTA = (255,0,255)
 YELLOW = (255,255,0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
-
-
-
-
 
 class Particle:
     def __init__(self, position, velocity, mass, image = None, offset = None):
@@ -314,12 +309,12 @@ def random_color(minimum, maximum):
 def main():
     pygame.init()
     world = World(1200, 800, WHITE)
-    screen = pygame.display.set_mode((1200, 800))
     world.display()
     
     # -- Font Stuff -- #
-    font = pygame.font.SysFont("Times New Roman", 18)
-    fuel_label = font.render("Shapes Placed: ", 1, BLACK)
+    font = pygame.font.SysFont("Times New Roman", 50)
+    fuel_label = font.render("Shapes Placed: ", False, BLACK)
+    world.screen.blit(fuel_label, (50, 50))
     
     MAX_RECT_LEN = 400
     MAX_RECT_HEIGHT = 75
@@ -330,7 +325,6 @@ def main():
     MIN_TRI_LEN = 100
     
     moving = []
-    clickShapes = []
 
     clock = pygame.time.Clock()
     done = False
@@ -341,10 +335,7 @@ def main():
     timesteps = 0
 
 
-    while not done:       
-        fuel_label = font.render("Shapes Placed: ", 1, BLACK)
-        screen.blit(fuel_label, (50, 50))
-        
+    while not done:                    
         # Create a new particle to replace one that was launched
         if new_particle_needed:
             new_particle_needed = False
