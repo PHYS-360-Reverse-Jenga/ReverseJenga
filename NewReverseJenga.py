@@ -123,10 +123,6 @@ class World:
         self.shapes.remove(shape)
         
     def display(self):
-        #shapesPlaced = 0
-        #font = pygame.font.SysFont('Calibri',25,True,False)
-        #text = font.render("Shapes placed: " + shapesPlaced,True,BLACK)
-        #self.screen.blit(text,[10,10])
         self.screen.blit(self.bg_screen, (0,0))
         for p in self.shapes:
             p.draw(self.screen)
@@ -249,6 +245,8 @@ def handle_collisions(shapes, world):
                 p.add_impulse(j, wall_point)
                 p.pos += max_d*wall.normal 
                 p.update_points()
+                
+                p.vel = p.vel*.01
            
         #start Rectangle collision
         for m in range(len(shapes)):       
@@ -281,6 +279,8 @@ def handle_collisions(shapes, world):
                 q.pos -=  displacement * (q.massinv/(p.massinv + q.massinv))
                 p.update_points()
                 q.update_points()
+                
+                p.vel = p.vel*.01
 
     return False
 
