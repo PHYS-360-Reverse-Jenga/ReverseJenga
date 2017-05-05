@@ -10,6 +10,7 @@ import random
 import math
 import pygame
 
+
 RED = (255,0,0)
 GREEN = (0,255,0)
 BLUE = (0,0,255)
@@ -380,6 +381,7 @@ class Triangle(Shape):
         super().__init__(pos, vel, angle, angvel, color, mass, moment, points)
     
 def main():
+    
     pygame.init()
     world = World(1200, 800, WHITE)
     world.display()
@@ -394,6 +396,7 @@ def main():
     
     moving = []
     num_shapes = 0
+    noPlace = 121
   
     # -- Font Stuff -- #
     font = pygame.font.SysFont("Times New Roman", 30)
@@ -439,12 +442,14 @@ def main():
                 done = True
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
-                #Add Random shape to world
-                moving.append(randShape)
-                num_shapes = num_shapes + 1 
-                print(num_shapes)
-                launching = False
-                new_particle_needed = True
+                if noPlace > 120:
+                    #Add Random shape to world
+                    moving.append(randShape)
+                    num_shapes = num_shapes + 1 
+                    print(num_shapes)
+                    launching = False
+                    new_particle_needed = True
+                    noPlace = 0
                 
         if not launching:
             pos = Vec2d(pygame.mouse.get_pos())
@@ -476,8 +481,10 @@ def main():
         world.screen.blit(shape_display, (240, 50))
         pygame.display.flip()
         
-        clock.tick(30) # wait so that this only updates 60 fps maximum
+        clock.tick(60) # wait so that this only updates 60 fps maximum
         
+        noPlace += 1
+        print(noPlace)
     pygame.quit() # quit nicely, so the program window doesn't hang
 
 if __name__ == "__main__":
