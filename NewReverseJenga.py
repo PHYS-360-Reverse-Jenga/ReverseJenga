@@ -411,6 +411,7 @@ def main():
     
     density = 1 # mass / area
     timesteps = 0
+    noPlace = 0
     
     rr=Rectangle((600,750), (0,0), 0, 0, YELLOW, 1E99 , 350, 20 )
     
@@ -447,7 +448,7 @@ def main():
                 done = True
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
-<<<<<<< HEAD
+
                 #Add Random shape to world
                 moving.append(randShape)
                 collisions.append(randShape)
@@ -455,7 +456,7 @@ def main():
                 print(num_shapes)
                 launching = False
                 new_particle_needed = True
-=======
+
                 if noPlace > 60:
                     #Add Random shape to world
                     moving.append(randShape)
@@ -464,7 +465,6 @@ def main():
                     launching = False
                     new_particle_needed = True
                     noPlace = 0
->>>>>>> origin/master
                 
         if not launching:
             pos = Vec2d(pygame.mouse.get_pos())
