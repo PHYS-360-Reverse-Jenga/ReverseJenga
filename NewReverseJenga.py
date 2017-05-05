@@ -381,7 +381,6 @@ class Triangle(Shape):
         super().__init__(pos, vel, angle, angvel, color, mass, moment, points)
     
 def main():
-    
     pygame.init()
     world = World(1200, 800, WHITE)
     world.display()
@@ -395,8 +394,8 @@ def main():
     MIN_TRI_LEN = 100
     
     moving = []
+    collisions = []
     num_shapes = 0
-    noPlace = 121
   
     # -- Font Stuff -- #
     font = pygame.font.SysFont("Times New Roman", 30)
@@ -412,6 +411,11 @@ def main():
     
     density = 1 # mass / area
     timesteps = 0
+    
+    rr=Rectangle((600,750), (0,0), 0, 0, YELLOW, 1E99 , 350, 20 )
+    
+    collisions = [rr]
+    world.add(rr)
 
 
     while not done:                    
@@ -428,6 +432,7 @@ def main():
             randLen = random.randrange(MIN_RECT_HEIGHT, MAX_RECT_HEIGHT)
             randShift = random.randrange(MIN_TRI_LEN, MAX_TRI_LEN)
             
+            
             #shape chooser
             if random.randrange(0,2) == 0:
                 #pick rect
@@ -442,25 +447,26 @@ def main():
                 done = True
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if noPlace > 120:
-                    #Add Random shape to world
-                    moving.append(randShape)
-                    num_shapes = num_shapes + 1 
-                    print(num_shapes)
-                    launching = False
-                    new_particle_needed = True
-                    noPlace = 0
+                #Add Random shape to world
+                moving.append(randShape)
+                collisions.append(randShape)
+                num_shapes = num_shapes + 1 
+                print(num_shapes)
+                launching = False
+                new_particle_needed = True
                 
         if not launching:
             pos = Vec2d(pygame.mouse.get_pos())
             randShape.visible = (pygame.mouse.get_focused() and pos.x > 0 and pos.y > 0
                                 and pos.x < world.width-1 and pos.y < world.height-1)
             randShape.pos = pos
-            
+        
+        
         # Velocity Verlet method
         n = 1
         dt = 1 / n
         collide_max = 10
+        #moving.append(collisions)
         for i in range(n):        
             update_force(moving, world)
             update_vel(moving, 0.5*dt)
@@ -470,9 +476,10 @@ def main():
             collide_count = 0
             collide_dt = dt
             while (collide_count < collide_max 
-                   and handle_collisions(moving, world, collide_dt)):
+                   and handle_collisions(collisions, world, collide_dt)):
                 collide_count += 1
                 collide_dt = 0
+            
         world.display()  
         
         shape_label = font.render("Shapes Placed: ", 1, BLACK)
@@ -481,11 +488,10 @@ def main():
         world.screen.blit(shape_display, (240, 50))
         pygame.display.flip()
         
-        clock.tick(60) # wait so that this only updates 60 fps maximum
+        clock.tick(30) # wait so that this only updates 60 fps maximum
         
-        noPlace += 1
-        print(noPlace)
     pygame.quit() # quit nicely, so the program window doesn't hang
+
 
 if __name__ == "__main__":
     try:
