@@ -442,7 +442,7 @@ def main():
                 done = True
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if noPlace > 120:
+                if noPlace > 60:
                     #Add Random shape to world
                     moving.append(randShape)
                     num_shapes = num_shapes + 1 
