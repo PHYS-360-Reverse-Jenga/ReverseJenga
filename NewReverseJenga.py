@@ -447,6 +447,7 @@ def main():
                 done = True
                 break
             if event.type == pygame.MOUSEBUTTONDOWN:
+<<<<<<< HEAD
                 #Add Random shape to world
                 moving.append(randShape)
                 collisions.append(randShape)
@@ -454,6 +455,16 @@ def main():
                 print(num_shapes)
                 launching = False
                 new_particle_needed = True
+=======
+                if noPlace > 60:
+                    #Add Random shape to world
+                    moving.append(randShape)
+                    num_shapes = num_shapes + 1 
+                    print(num_shapes)
+                    launching = False
+                    new_particle_needed = True
+                    noPlace = 0
+>>>>>>> origin/master
                 
         if not launching:
             pos = Vec2d(pygame.mouse.get_pos())
